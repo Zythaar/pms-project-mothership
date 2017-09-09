@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Grid : MonoBehaviour {
 
-    public int chunkSize = 32;
+    public int chunkSize;
 
     public bool displayGridGizmos = true;
     public bool autoUpdate;
@@ -59,13 +59,6 @@ public class Grid : MonoBehaviour {
     {
         if (gridGenerated)
         {
-            for (int x = 0; x < chunkSize; x++)
-            {
-                for (int y = 0; y < chunkSize; y++)
-                {
-                    chunk[x, y] = null;
-                }
-            }
             chunk = null;
             gridGenerated = false;
         }
@@ -91,7 +84,7 @@ public class Grid : MonoBehaviour {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireCube(transform.position, new Vector3(chunkSize, chunkSize, 0f));
 
-        if (!gridGenerated)
+        if (!gridGenerated || chunk == null)
             return;
 
         Gizmos.color = Color.green;
