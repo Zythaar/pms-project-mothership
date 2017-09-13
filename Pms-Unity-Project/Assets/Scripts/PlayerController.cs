@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using PMS.UI;
 
 public class PlayerController : MonoBehaviour 
 {
@@ -10,42 +11,32 @@ public class PlayerController : MonoBehaviour
 
     Camera cam;
     Motor motor;
+    Selectable selectable;
 
     // Use this for initialization
     private void Start () 
 	{
         cam = Camera.main;
         motor = GetComponent<Motor>();
+        selectable = GetComponent<Selectable>();
     }
-	
-	// Update is called once per frame
-	private void Update () 
+    public static int cameraOffset = -11;// TEST
+    // Update is called once per frame
+    private void Update () 
 	{
-        if (Input.GetMouseButtonDown(0))
-        {
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, 100, movementMask))
-            {
-                //motor.MoveToPoint(hit.point);
-
-                RemoveFocus();
-            }
-        }
-
         if (Input.GetMouseButtonDown(1))
         {
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, 100))
+            if (selectable.isSelected)
             {
-                Interactable interactable = hit.collider.GetComponent<Interactable>();
+                RaycastHit2D hit = Physics2D.Raycast(cam.ScreenToWorldPoint(Input.mousePosition + Vector3.back * cameraOffset), Vector2.zero, 100, movementMask);    // Collision Layer
 
-                if (interactable != null)
+                Vector3 target = cam.ScreenToWorldPoint(Input.mousePosition + Vector3.back * cameraOffset);
+                motor.MoveToPoint(target);
+                if (hit)
                 {
-                    SetFocus(interactable);
+                    motor.MoveToPoint(hit.point);
+
+                    //RemoveFocus();
                 }
             }
         }

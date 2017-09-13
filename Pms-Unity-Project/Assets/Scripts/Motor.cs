@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using PMS.AI;
 
 [RequireComponent(typeof(AStarAgent))]
 public class Motor : MonoBehaviour 
@@ -31,15 +32,15 @@ public class Motor : MonoBehaviour
 
     public void FollowTarget(Interactable newTarget)
     {
-        agent.stoppingDistance = newTarget.radius * .8f;
-        agent.updateRotation = false;
+        agent.StoppingDistance = newTarget.radius * .8f;
+        agent.UpdateRotation = false;
         target = newTarget.interactionTransform;
     }
 
     public void StopFollowingTarget()
     {
-        agent.stoppingDistance = 0;
-        agent.updateRotation = true;
+        agent.StoppingDistance = 0;
+        agent.UpdateRotation = true;
         target = null;
     }
 
