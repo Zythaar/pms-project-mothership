@@ -23,7 +23,9 @@ GameObject:
   - component: {fileID: 114610201467234390}
   - component: {fileID: 114437030036572808}
   - component: {fileID: 114005567321457984}
-  m_Layer: 8
+  - component: {fileID: 114355090149072812}
+  - component: {fileID: 114375002063222210}
+  m_Layer: 9
   m_Name: cyb_s_miningdrone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -41,7 +43,7 @@ GameObject:
   - component: {fileID: 212253985012269072}
   - component: {fileID: 58494534217832988}
   - component: {fileID: 50526244465510544}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Graphic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -57,7 +59,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4522391611203716}
   - component: {fileID: 212675632895478162}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Select
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -73,7 +75,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4669698082283414}
   - component: {fileID: 212904511041350848}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: cyb_s_miningDrone_v1_7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -87,7 +89,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1248063450310112}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -1.387, y: -2.924, z: 0}
+  m_LocalPosition: {x: -2.83, y: -4.4, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4871093773939588}
@@ -181,6 +183,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6da154ea94acb2439b037d462fe1da4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &114355090149072812
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1248063450310112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b00dcc03fcedfd940aacc3b2016a4102, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 3
+  interactionTransform: {fileID: 4321438465017678}
+--- !u!114 &114375002063222210
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1248063450310112}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5ebcea4dd353d349b953549081d1426, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  systemSlots:
+  - {fileID: 11400000, guid: 44529c7794108f2468bf886e61b659b5, type: 2}
 --- !u!114 &114437030036572808
 MonoBehaviour:
   m_ObjectHideFlags: 1

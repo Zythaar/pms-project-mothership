@@ -223,7 +223,6 @@ namespace PMS.AI
 
         public bool SetDestination (Vector3 target)
         {
-            Debug.Log("Target: " + target + " set.");
 
             currentWayPoint = target;
 
@@ -329,7 +328,7 @@ namespace PMS.AI
         protected virtual void MoveTowardsTarget(Vector2 targetPosition)
         {
             // Movement
-            if (Vector3.Distance(transform.position, targetPosition) > (threshold))
+            if (Vector3.Distance(transform.position, targetPosition) > (threshold + stoppingDistance))
             {
                 //shipState = ShipState.move;
                 transform.position = Vector3.MoveTowards(transform.position, targetPosition, maxSpeed * Time.deltaTime);

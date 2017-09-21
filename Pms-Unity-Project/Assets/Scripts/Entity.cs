@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour 
 {
-   
+   // interactable
+   // Destroyable
+   // hit points
 	
 }

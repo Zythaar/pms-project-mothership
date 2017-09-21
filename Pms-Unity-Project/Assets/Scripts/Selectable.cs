@@ -12,8 +12,11 @@ namespace PMS.UI
         public EntityType entityType;
         public EntityID entityID;
 
-        public bool isPointed;
-        public bool isSelected;
+        public bool IsPointed { get { return isPointed; } private set { isPointed = value; } } 
+        public bool IsSelected { get { return isSelected; } private set { isSelected = value; } }
+
+        private bool isPointed;
+        private bool isSelected;
 
         public Color pointedColor;
         public Color selectedColor;
@@ -78,11 +81,6 @@ namespace PMS.UI
 
 
             ChangeCircle();
-        }
-
-        public bool GetSelectedState()
-        {
-            return isSelected;
         }
 
         void ChangeCircle()

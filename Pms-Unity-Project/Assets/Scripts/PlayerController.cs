@@ -26,19 +26,29 @@ public class PlayerController : MonoBehaviour
 	{
         if (Input.GetMouseButtonDown(1))
         {
-            if (selectable.isSelected)
+            if (selectable.IsSelected)
             {
                 RaycastHit2D hit = Physics2D.Raycast(cam.ScreenToWorldPoint(Input.mousePosition + Vector3.back * cameraOffset), Vector2.zero, 100, movementMask);    // Collision Layer
 
                 Vector3 target = cam.ScreenToWorldPoint(Input.mousePosition + Vector3.back * cameraOffset);
                 motor.MoveToPoint(target);
+
                 if (hit)
                 {
-                    motor.MoveToPoint(hit.point);
+                    Interactable interactable = hit.collider.GetComponentInParent<Interactable>();
 
+                    if (interactable != null)
+                    {
+                        SetFocus(interactable);
+                    }
                     //RemoveFocus();
                 }
             }
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            RemoveFocus();
         }
     }
 

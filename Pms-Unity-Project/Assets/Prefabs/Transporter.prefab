@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4494597605393486}
   - component: {fileID: 212647126805724928}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: cyb_m_transporter_v0_15
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36,7 +36,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4790374302836080}
   - component: {fileID: 212540027302234584}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Select (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -52,7 +52,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4832717734151680}
   - component: {fileID: 212200805657686938}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: cyb_m_transporter_v0_8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -70,7 +70,7 @@ GameObject:
   - component: {fileID: 212232614855320788}
   - component: {fileID: 50784761293280644}
   - component: {fileID: 58298101924983332}
-  m_Layer: 8
+  m_Layer: 9
   m_Name: Graphic
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,7 +89,9 @@ GameObject:
   - component: {fileID: 114574975961167324}
   - component: {fileID: 114426359578135724}
   - component: {fileID: 114369997574446536}
-  m_Layer: 8
+  - component: {fileID: 114433838583121746}
+  - component: {fileID: 114264376673481888}
+  m_Layer: 9
   m_Name: Transporter
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -200,6 +202,19 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 1.1600002
+--- !u!114 &114264376673481888
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1899853473353588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a5ebcea4dd353d349b953549081d1426, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  systemSlots:
+  - {fileID: 11400000, guid: df12046db5268604a818127995f04735, type: 2}
 --- !u!114 &114369997574446536
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -226,6 +241,19 @@ MonoBehaviour:
   movementMask:
     serializedVersion: 2
     m_Bits: 4294967295
+--- !u!114 &114433838583121746
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1899853473353588}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b00dcc03fcedfd940aacc3b2016a4102, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  radius: 3
+  interactionTransform: {fileID: 4413442102386868}
 --- !u!114 &114574975961167324
 MonoBehaviour:
   m_ObjectHideFlags: 1
