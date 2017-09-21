@@ -6,94 +6,49 @@ using PMS.UI;
 
 public class SelectionController : MonoBehaviour 
 {
-    public static int cameraOffset = -11;
+    public static int cameraOffset = -11;   //TEMPORARY
+
     public LayerMask selectableMask;
-
-    public delegate void OnPointed();
-    public OnPointed onPointed;
-
-    public delegate void OnDePointed();
-    public OnDePointed onDePointed;
-
-    public delegate void OnSelected();
-    public OnSelected onSelected;
-
-    public delegate void OnDeselected();
-    public OnDeselected onDeselected;
 
     public delegate void OnSelectionChanged();
     public OnSelectionChanged onSelectionChanged;
 
-
     public enum PointerEntityState { Void, Ship, Station, Minable, GUI };
     public PointerEntityState pointerEntityState;
-    public Selectable pointedSelectable;
-    public List<Selectable> currentSelectedList;
+    
+    public List<Selectable> ownedSelectableList; // kept here and updated // or moved and get when needed
 
-    public List<Selectable> currentPointedList;
+    private Selectable pointedSelectable;
+    private List<Selectable> currentSelectedShipList;
+    private List<Selectable> currentSelectedStationList;
 
-    public List<Selectable> currentSelectedShipList;
-    public List<Selectable> currentSelectedStationList;
+    private bool isBoxSelecting; // make public if graphics get moved
+    private bool isDoubleClick;
+    private Vector3 mousePositionOld;
 
-    [SerializeField]
-    int currentSelectedShipCount;
-    [SerializeField]
-    int currentSelectedStationCount;
+    private Camera cam;
 
-    public List<Selectable> ownedSelectableList;
-
-    public bool isBoxSelecting;
-    public bool isDoubleClick;
-    public Vector3 mousePositionOld;
-
-
-    Camera cam;
+    /* moved or kept ? */
+    // scriptable object ????
     public Color boxColor;
     public Color boxBorderColor;
     float thickness = 2f;
-        /*
-         * void OnPointed()
-        {
 
-        }
-
-        void OnDePointed()
-        {
-
-        }
-
-        void OnSelected()
-        {
-
-        }
-
-        void OnDeselected()
-        {
-
-        }
-         * */
-
+    /* -------------------- */
     // Use this for initialization
     private void Start () 
 	{
         cam = Camera.main;
-        currentSelectedList = new List<Selectable>();
+        currentSelectedShipList = new List<Selectable>();
+        currentSelectedStationList = new List<Selectable>();
+    }
 
-    }
-    private void OnGUI()
-    {
-        if (isBoxSelecting)
-        {
-            var rect = Utils.GetScreenRect(mousePositionOld, Input.mousePosition);
-            Utils.DrawScreenRect(rect, boxColor);
-            Utils.DrawScreenRectBorder(rect, thickness, boxBorderColor);
-        }
-    }
     // Update is called once per frame
     private void Update () 
 	{
 
         #region PointerEntityStateBehaviour
+
         if (EventSystem.current.IsPointerOverGameObject())
         {
             pointerEntityState = PointerEntityState.GUI;
@@ -102,41 +57,37 @@ public class SelectionController : MonoBehaviour
         {
             // MULTIPLE HITS NEEDED ?????
             // Shoot ray to detect selectables
-            RaycastHit2D[] hits = Physics2D.RaycastAll(cam.ScreenToWorldPoint(Input.mousePosition + Vector3.back * cameraOffset), Vector2.zero, 100, selectableMask);    // Collision Layer
+            RaycastHit2D hit = Physics2D.Raycast(cam.ScreenToWorldPoint(Input.mousePosition + Vector3.back * cameraOffset), Vector2.zero, 100, selectableMask);    // Collision Layer
 
-            foreach (RaycastHit2D hit in hits)
+            if (hit) // ray has detected anything
             {
-                if (hit) // ray has detected anything
+                Selectable newSelectable = hit.collider.GetComponentInParent<Selectable>(); // Check for selectable
+
+                if (newSelectable) // has hit a selectable
                 {
-                    Selectable newSelectable = hit.collider.GetComponentInParent<Selectable>(); // Check for selectable
+                    // Check if the entity is owned by the player
 
-                    if (newSelectable) // has hit a selectable
+
+                    // Set the pointer type of the controller
+                    if (newSelectable.entityType == EntityType.Ship)
                     {
-                        // Check if the entity is owned by the player
-
-
-                        // Set the pointer type of the controller
-                        if (newSelectable.entityType == EntityType.Ship)
-                        {
-                            pointerEntityState = PointerEntityState.Ship;
-                        }
-                        else if (newSelectable.entityType == EntityType.Station)
-                        {
-                            pointerEntityState = PointerEntityState.Station;
-                        }
-                        else if (newSelectable.entityType == EntityType.Minable)
-                        {
-                            pointerEntityState = PointerEntityState.Minable;
-                        }
-
-
-                        SetOnPointed(newSelectable);   // Set the pointed state of the entity
+                        pointerEntityState = PointerEntityState.Ship;
+                    }
+                    else if (newSelectable.entityType == EntityType.Station)
+                    {
+                        pointerEntityState = PointerEntityState.Station;
+                    }
+                    else if (newSelectable.entityType == EntityType.Minable)
+                    {
+                        pointerEntityState = PointerEntityState.Minable;
                     }
 
-                }
-            }
 
-            if (hits.Length == 0) // nothing hit
+                    SetOnPointed(newSelectable);   // Set the pointed state of the entity
+                }
+
+            }
+            else   // nothing hit
             {
                 pointerEntityState = PointerEntityState.Void;// Void State
 
@@ -160,19 +111,26 @@ public class SelectionController : MonoBehaviour
         #region Pointer End
         if (Input.GetMouseButtonUp(0)) // Mouse up behaviour
         {
-            //selectedInteractableList.Clear();
-
             bool shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
-            bool control = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+            bool control = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) || isDoubleClick;
 
-            if (pointerEntityState == PointerEntityState.Void || !shift) // Deselect all in the void or not shift
+            if (pointerEntityState == PointerEntityState.Void || !shift && !isBoxSelecting) // Deselect all in the void or not shift
             {
                 DeselectAll();
             }
 
             if (pointerEntityState != PointerEntityState.Void && pointerEntityState != PointerEntityState.GUI)
             {
-                if (shift)    // Up Shift
+                List<Selectable> pointedSelectables = new List<Selectable>();
+
+
+                if (!shift && !control) // Simple select
+                {
+                    Debug.Log("Simple select du simbel");
+                    Select(pointedSelectable);
+                }
+
+                if (shift && !control)  // Shift select
                 {
                     bool isSelected = pointedSelectable.IsSelected;
                     isSelected = !isSelected;
@@ -183,27 +141,25 @@ public class SelectionController : MonoBehaviour
                     }
                     else
                     {
-                        Deselect(pointedSelectable);
+                       Deselect(pointedSelectable);
                     }
                 }
-                else
-                {
-                    Select(pointedSelectable);
-                }
 
-                if (isDoubleClick || control)
+                if (control)    // Controll Select (including control shift select)
                 {
-                    //SelectEqualEntitiesInCameraView();
+                    List<Selectable> selectables = new List<Selectable>();
                     foreach (Selectable selectable in ownedSelectableList)
                     {
                         if (selectable.entityID == pointedSelectable.entityID)
                         {
                             if (cam.pixelRect.Contains(cam.WorldToViewportPoint(selectable.transform.position))) // clamp in cam view
                             {
-                                Select(selectable);
+                                selectables.Add(selectable);
                             }
                         }
                     }
+
+                    SelectMultiple(selectables.ToArray());
                 }
             }
 
@@ -211,81 +167,45 @@ public class SelectionController : MonoBehaviour
 
             if (isBoxSelecting && mousePositionOld != Input.mousePosition) // Box selecting
             {
-                int currentBoxedShipCount = 0, currentBoxedStationCount = 0;
+                List<Selectable> boxedShipList = new List<Selectable>();
+                List<Selectable> boxedStationList = new List<Selectable>();
+
                 foreach (Selectable selectable in ownedSelectableList)
                 {
                     if (Utils.GetViewportBounds(cam, mousePositionOld, Input.mousePosition).Contains(cam.WorldToViewportPoint(selectable.transform.position)))
                     {
-                        if (!currentPointedList.Contains(selectable))
+                        if (selectable.entityType == EntityType.Ship)   // check if ship
                         {
-                            currentPointedList.Add(selectable);
-                            if (selectable.entityType == EntityType.Ship)
-                            {
-                                currentSelectedShipList.Add(selectable);
-                                currentBoxedShipCount++;
-                            }
+                            boxedShipList.Add(selectable); // collect boxed ships
+                        }
 
-                            if (selectable.entityType == EntityType.Station)
-                            {
-                                currentSelectedStationList.Add(selectable);
-                                currentBoxedStationCount++;
-                            }
+                        if (selectable.entityType == EntityType.Station)    // check if station
+                        {
+                            boxedStationList.Add(selectable);   // collect boxed stations
                         }
                     }
                     else
                     {
-                        if (currentPointedList.Contains(selectable))
-                        {
-                            currentPointedList.Remove(selectable);
-                        }
-                        Deselect(selectable);
+                        Deselect(selectable); // Deselect entities not inside the box
                     }
 
-                    if (selectable != pointedSelectable)
+                    if (selectable != pointedSelectable) // depoint all but the pointed entity
                     {
                         SetOnDepointed(selectable);
                     }
                 }
 
-                Debug.Log("Boxed Ships: " + currentBoxedShipCount + "\nBoxed Stations: " + currentBoxedStationCount);
+                Debug.Log("Boxed Ships: " + boxedShipList.Count + "\nBoxed Stations: " + boxedStationList.Count);
 
-                if (currentSelectedShipList.Count > 0 && currentSelectedStationList.Count > 0)
-                {
-                    //foreach (Selectable selectable in currentSelectedStationList) // 
-                    //{
+                SelectMultiple(boxedShipList.ToArray());
 
-                    //    selectable.OnPointed();
-                    //}
-                    currentSelectedStationList.Clear();
-                    foreach (Selectable selectable in currentSelectedShipList)
-                    {
-                        Select(selectable);
-                        //selectable.OnDePointed();
-                    }
-                }
-                else
+                if (boxedShipList.Count == 0 && boxedStationList.Count > 0)
                 {
-                    foreach (Selectable selectable in currentPointedList)
-                    {
-                        if (currentPointedList.Contains(selectable))
-                        {
-                            Select(selectable);
-                            //selectable.OnDePointed();
-                        }
-                        //else
-                        //{
-                        //    Deselect(selectable);
-                        //}
-                    }
-                }
+                    SelectMultiple(boxedStationList.ToArray());
+                } 
             }
-
-
             isBoxSelecting = false;
-
             #endregion
-
-            currentPointedList.Clear();
         }
 
         #endregion
@@ -299,39 +219,28 @@ public class SelectionController : MonoBehaviour
                 if (Utils.GetViewportBounds(cam, mousePositionOld, Input.mousePosition).Contains(cam.WorldToViewportPoint(selectable.transform.position)))
                 {
                     SetOnPointed(selectable, isBoxSelecting);
-                    
-                    //if (!currentPointedList.Contains(selectable))
-                    //{
-                    //    currentPointedList.Add(selectable);
-                    //}
                 }
                 else
                 {
                     if (selectable != pointedSelectable)
                     {
                         SetOnDepointed(selectable);
-                        //if (currentPointedList.Contains(selectable))
-                        //{
-                        //    currentPointedList.Remove(selectable);
-                        //}
                     }
                 }
             }
         }
         #endregion
-
-        #region Pointer Null
-        // Mouse Released
-        if (pointerEntityState == PointerEntityState.Void)
-        {
-            if (pointedSelectable != null)
-                pointedSelectable.OnDePointed();
-
-            pointedSelectable = null;
-        } 
-        #endregion
     }
 
+    private void OnGUI() // moved or kept
+    {
+        if (isBoxSelecting)
+        {
+            var rect = Utils.GetScreenRect(mousePositionOld, Input.mousePosition);
+            Utils.DrawScreenRect(rect, boxColor);
+            Utils.DrawScreenRectBorder(rect, thickness, boxBorderColor);
+        }
+    }
 
     #region Interfaces
 
@@ -357,35 +266,21 @@ public class SelectionController : MonoBehaviour
 
     #endregion
 
-
     void Select(Selectable newSelectable)
     {
         // don't pass in null values
 
-        // select the entity
+        newSelectable.OnSelected(); // select the entity
 
         // check the entity type
-
         // Check if the entity is allready in the appropriate List
-         //// add the entity to the List if NOT in it
+        //// add the entity to the List if NOT in it
+        AddEntityToList(newSelectable);
 
         // Invoke onSelectionChangedonSelectionChanged if NOT null
-
-        ///////////////////
-        // to do: make shure is not already selected???
-
-        //if (currentSelectedShipCount > 0 && newSelectable.entityType == EntityType.Station)
-        //{
-        //    Debug.Log("Station was not selected because ships are already selected!");
-        //    return;
-        //}
-        if (newSelectable != null)
-            newSelectable.OnSelected();
-        if (!currentSelectedList.Contains(newSelectable))
+        if (onSelectionChanged != null)
         {
-            currentSelectedList.Add(newSelectable);
-
-            IncrementEntityType(newSelectable);
+            onSelectionChanged.Invoke();
         }
     }
 
@@ -394,78 +289,68 @@ public class SelectionController : MonoBehaviour
         // don't pass in null values
 
         // loop through array
+        foreach (Selectable newSelectable in newSelectables)
+        {
+            newSelectable.OnSelected(); // select the entity
 
-        // select the entity
-
-        // check the entity type
-
-        // Check if the entity is allready in the appropriate List
-        //// add the entity to the List if NOT in it
+            // check the entity type
+            // Check if the entity is allready in the appropriate List
+            //// add the entity to the List if NOT in it
+            AddEntityToList(newSelectable);
+        }
 
         // Invoke onSelectionChanged if NOT null
+        if (onSelectionChanged != null)
+        {
+            onSelectionChanged.Invoke();
+        }
     }
 
     void Deselect(Selectable newSelectable)
     {
         // don't pass in null values
 
-        // deselect the entity
+        newSelectable.OnDeselected();   // deselect the entity
 
         // check the entity type
-
         // Check if the entity is allready in the appropriate List
         // remove the entity to the List if so
+        RemoveEntityFromList(newSelectable);
 
         // Invoke onSelectionChanged if NOT null
-        
-        ////////////
-        newSelectable.OnDeselected();
-
-        if (currentSelectedList.Contains(newSelectable))
+        if (onSelectionChanged != null)
         {
-            currentSelectedList.Remove(newSelectable);
-
-            DecrementEntityType(newSelectable);
+            onSelectionChanged.Invoke();
         }
-       
     }
-
     void DeselectAll()
     {
         // don't pass in null values
 
-        // convert both List to (optional one??) Array
+        // loop through both Arrays and deselect all
+        foreach (Selectable selectable in currentSelectedShipList)
+        {
+            //if (notToBeDeselected != nu notToBeDeselected.entityType == EntityType.Ship && notToBeDeselected == selectable)
+            //    continue;
+            selectable.OnDeselected();
+        }
 
-        // loop through both Arrays
-
-        //// deselect the entity
-
-        //// check the entity type
-
-        //// Check if the entity is allready in the appropriate List
-        //// remove the entity to the List if so
-
-        // Invoke onSelectionChanged if NOT null
+        foreach (Selectable selectable in currentSelectedStationList)
+        {
+            //if (notToBeDeselected.entityType == EntityType.Station && notToBeDeselected == selectable)
+            //    continue;
+            selectable.OnDeselected();
+        }
 
         // Clear both Lists
-
-        ////////////
-
-
-        //if (onDeselected != null)
-        //{
-        //    onDeselected();
-
-
-
-        //}
-        foreach (Selectable selectable in currentSelectedList.ToArray())
-        {
-            Deselect(selectable);
-        }
         currentSelectedStationList.Clear();
         currentSelectedShipList.Clear();
-        //currentSelectedList.Clear();
+
+        // Invoke onSelectionChanged if NOT null
+        if (onSelectionChanged != null)
+        {
+            onSelectionChanged.Invoke();
+        }
     }
 
     void SetOnPointed (Selectable newSelectable, bool isBoxSelecting) // Called inside box pointing
@@ -506,22 +391,42 @@ public class SelectionController : MonoBehaviour
         }
     }
 
-    void IncrementEntityType(Selectable newSelectable)
+    void AddEntityToList(Selectable newSelectable)
     {
         if (newSelectable.entityType == EntityType.Ship)
-            currentSelectedShipCount++;
+        {
+            if (!currentSelectedShipList.Contains(newSelectable))
+            {
+                currentSelectedShipList.Add(newSelectable);
+            }
+        }
 
         if (newSelectable.entityType == EntityType.Station)
-            currentSelectedStationCount++;
+        {
+            if (!currentSelectedStationList.Contains(newSelectable))
+            {
+                currentSelectedStationList.Add(newSelectable);
+            }
+        }
     }
 
-    void DecrementEntityType(Selectable newSelectable)
+    void RemoveEntityFromList(Selectable newSelectable)
     {
         if (newSelectable.entityType == EntityType.Ship)
-            currentSelectedShipCount--;
+        {
+            if (currentSelectedShipList.Contains(newSelectable))
+            {
+                currentSelectedShipList.Remove(newSelectable);
+            }
+        }
 
         if (newSelectable.entityType == EntityType.Station)
-            currentSelectedStationCount--;
+        {
+            if (currentSelectedStationList.Contains(newSelectable))
+            {
+                currentSelectedStationList.Remove(newSelectable);
+            }
+        }
     }
 
 }

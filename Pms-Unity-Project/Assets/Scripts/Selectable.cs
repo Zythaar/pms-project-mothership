@@ -28,10 +28,10 @@ namespace PMS.UI
         private void Start()
         {
             SelectionController controller = GameManager.singleton.selectionController;
-            controller.onPointed += OnPointed;
-            controller.onDePointed += OnDePointed;
-            controller.onSelected += OnSelected;
-            controller.onDeselected += OnDeselected;
+            //controller.onPointed += OnPointed;
+            //controller.onDePointed += OnDePointed;
+            //controller.onSelected += OnSelected;
+            //controller.onDeselected += OnDeselected;
 
             circle.enabled = false;
 
@@ -55,7 +55,7 @@ namespace PMS.UI
 
         public void OnPointed()
         {
-            isPointed = true;
+            IsPointed = true;
 
             ChangeCircle();
         }
@@ -69,7 +69,8 @@ namespace PMS.UI
 
         public void OnSelected()
         {
-            isSelected = true;
+            Debug.Log("OnSelected " + name);
+            IsSelected = true;
 
 
             ChangeCircle();
@@ -77,6 +78,7 @@ namespace PMS.UI
 
         public void OnDeselected()
         {
+            Debug.Log("OnDeSelected " + name);
             isSelected = false;
 
 
@@ -85,15 +87,15 @@ namespace PMS.UI
 
         void ChangeCircle()
         {
-            if (isSelected && isPointed)
+            if (IsSelected && IsPointed)
             {
                 circle.material.color = pointedAndSelectedColor;
             }
-            else if (isSelected)
+            else if (IsSelected)
             {
                 circle.material.color = selectedColor;
             }
-            else if (isPointed)
+            else if (IsPointed)
             {
                 circle.material.color = pointedColor;
             }
