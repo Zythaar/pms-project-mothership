@@ -34,6 +34,12 @@ public class SelectionController : MonoBehaviour
     public Color boxBorderColor;
     float thickness = 2f;
 
+    public void GetCurrentSelected(out Selectable[] selectedShips, out Selectable[] selectedStations)
+    {
+        selectedShips = currentSelectedShipList.ToArray();
+        selectedStations = currentSelectedStationList.ToArray();
+    }
+
     /* -------------------- */
     // Use this for initialization
     private void Start () 
@@ -114,7 +120,7 @@ public class SelectionController : MonoBehaviour
             bool shift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
             bool control = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl) || isDoubleClick;
 
-            if (pointerEntityState == PointerEntityState.Void || !shift && !isBoxSelecting) // Deselect all in the void or not shift
+            if (pointerEntityState == PointerEntityState.Void || !shift && pointerEntityState != PointerEntityState.GUI) // Deselect all in the void or not shift
             {
                 DeselectAll();
             }

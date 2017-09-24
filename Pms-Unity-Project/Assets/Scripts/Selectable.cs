@@ -27,7 +27,7 @@ namespace PMS.UI
 
         private void Start()
         {
-            SelectionController controller = GameManager.singleton.selectionController;
+            SelectionController controller = GameManager.singleton.SelectionController;
             //controller.onPointed += OnPointed;
             //controller.onDePointed += OnDePointed;
             //controller.onSelected += OnSelected;
