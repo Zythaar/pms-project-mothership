@@ -21,13 +21,16 @@ public class GameManager : MonoBehaviour
     } 
     #endregion
 
-    public SelectionController selectionController { get; private set; }
+    public SelectionController SelectionController { get; private set; }
+    public CommandController CommandController { get; private set; }
+
 
 
     // Use this for initialization
     private void Start () 
 	{
-        selectionController = GetComponent<SelectionController>();
+        SelectionController = GetComponent<SelectionController>();
+        CommandController = GetComponent<CommandController>();
     }
 	
 	// Update is called once per frame
