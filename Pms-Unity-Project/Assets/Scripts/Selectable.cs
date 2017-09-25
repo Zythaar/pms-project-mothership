@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public enum EntityType { Ship, Station, Minable };
-public enum EntityID { Worker, Transporter, Storage, Shipyard };
+public enum EntityID { Basic, Worker, Transporter, Storage, Shipyard };
 
 namespace PMS.UI
 {

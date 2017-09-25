@@ -3505,7 +3505,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 66912ae1b5035da41b1fd8ecc726d748, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  layout: {fileID: 11400000, guid: cb9ef51b4cf9c4049ae8ab61b6ad9834, type: 2}
+  layouts:
+  - {fileID: 11400000, guid: cb9ef51b4cf9c4049ae8ab61b6ad9834, type: 2}
+  - {fileID: 11400000, guid: 57b93743b51e6df47946c3a90a59704f, type: 2}
   commandButtons:
   - {fileID: 227654326}
   - {fileID: 622285395}
@@ -5125,3 +5127,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bbbacc2c809f2545bf6f927b2681cd7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  commandButtonLayouts: []

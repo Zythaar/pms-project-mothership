@@ -196,7 +196,7 @@ namespace PMS.AI
                 return speed / acceleration;
             return 1;
         }
-        bool isMoving;
+        bool isMoving = false;
         private void FixedUpdate()
         {
             //if (isMoving)

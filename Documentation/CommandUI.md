@@ -3,16 +3,17 @@
 Grid GUI Layout
 	 - 15 Buttons
 	 - Buttons will be en/disabled **OnSelecetionChanged** event from the **SelectionController**
-	 - The quantity and types of the current selected  **Selectables** will determine the responding Layout
+	 - The quantity and types of the current selected  **Selectable** will determine the responding Layout
 	 - The Layout is modulised to different abilities / commands
 	 - Each command is asigned to one Button at one time
 		+ Regulary the asignment stays. In some cases a command can link to a different Button (e. g. overlapping functionallity)
 	 
  # Program flow
 	1. The **OnSelecetionChanged** callback will be fired
-	2. The **CommandUI** gets the list of **Selectables** entities
+	2. The **CommandUI** gets the list of **Selectable** entities
 	3. The types will be checked for some conditions
 		- ships and stations
+		- focused **Selectable**
 		- different types or only one type
 		- nothing selected
 	4. The layout for the chosen type will be loaded

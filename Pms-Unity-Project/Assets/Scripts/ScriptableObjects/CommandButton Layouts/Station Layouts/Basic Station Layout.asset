@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdedfda999697b047928dae0e4ae9930, type: 3}
+  m_Name: Basic Station Layout
+  m_EditorClassIdentifier: 
+  commandButtons:
+  - name: Cancel
+    gridButton: 14
+    invokeKey: b
+    commandActionResponse: {fileID: 11400000, guid: 101b9ed9a3d2dde4fa3dad09f6e01ee0,
+      type: 2}
+    icon: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  entityType: 1
+  entityId: 0
